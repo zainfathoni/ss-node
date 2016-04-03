@@ -1,30 +1,35 @@
-// ROUTES
-// Get an instance of router
 var router = require('express').Router();
+var mongo = require('mongodb');
+var model = require('../model/category');
+
+var ObjectID = mongo.ObjectID;
+
+// Parameter 'id' Validation
+router.param('id', function(req, res, next, id) {
+    if (!ObjectID.isValid(id)) {
+        next(new Error('ObjectID is invalid.'));
+    } else {
+        req.id = ObjectID.createFromHexString(id);
+        next();
+    }
+});
 
 // Add
-router.post('/', function(req, res) {
-    res.send('Add');
-});
+router.post('/', model.insert);
+
+// Add Product to Category
+router.post('/:id', model.insertProduct);
 
 // Find All
-router.get('/', function(req, res) {
-    res.send('Find All');
-});
+router.get('/', model.findAll);
 
 // Find by Id
-router.get('/:id', function(req, res) {
-    res.send('Find by Id');
-});
+router.get('/:id', model.findById);
 
 // Update
-router.put('/:id', function(req, res) {
-    res.send('Update');
-});
+router.put('/:id', model.update);
 
 // Delete
-router.delete('/:id', function(req, res) {
-    res.send('Delete');
-});
+router.delete('/:id', model.delete);
 
 module.exports = router;

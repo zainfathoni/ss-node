@@ -1,8 +1,9 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
-var product = require('./routes/product');
 var category = require('./routes/category');
+var product = require('./routes/product');
+var tree = require('./routes/tree');
 
 // INITIALIZATION
 var app = express();
@@ -36,8 +37,9 @@ app.use(function(err, req, res, next) {
 });
 
 // Apply Routes
-app.use('/product', product);
 app.use('/category', category);
+app.use('/product', product);
+app.use('/tree', tree);
 
 // START SERVER
 app.listen(port);
