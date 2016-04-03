@@ -41,22 +41,32 @@ router.post('/', function(req, res, next) {
 });
 
 // Find All
-router.get('/', function(req, res) {
+router.get('/', function(req, res, next) {
     res.send('Find All');
 });
 
 // Find by Id
-router.get('/:id', function(req, res) {
+router.get('/:id', function(req, res, next) {
     res.send('Find by Id');
 });
 
 // Update
-router.put('/:id', function(req, res) {
-    res.send('Update');
+router.put('/:id', function(req, res, next) {
+    var id = req.id;
+    var item = req.body;
+    
+    MongoClient.connect(url, function(err, db) {
+        if (err) return next(err);
+        var coll = db.collection(table);
+        
+        model.update(coll, id, item, next, function(result) {
+            res.send(result);
+        });
+    });
 });
 
 // Delete
-router.delete('/:id', function(req, res) {
+router.delete('/:id', function(req, res, next) {
     res.send('Delete');
 });
 
