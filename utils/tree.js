@@ -31,7 +31,7 @@ function iterateCategory(current, item) {
     if (item.parent === data.name) {
         delete item.parent;
         children.push(categoryNode(item));
-    } else {
+    } else if (children) {
         for (var i = 0, len = children.length; i < len; i++) {
             iterateCategory(children[i], item);
         }
@@ -52,8 +52,25 @@ function iterateProduct(current, item) {
     }
 };
 
+function findCategory(current, name) {
+    var data = current.data;
+    var children = current.children;
+
+    if (name === data.name) {
+        return current;
+    } else if (children) {
+        for (var i = 0, len = children.length; i < len; i++) {
+            var result = findCategory(children[i], name);
+            if (result) {
+                return result;
+            }
+        }
+    }
+};
+
 exports.categoryNode = categoryNode;
 exports.productNode = productNode;
 exports.anyParentRemains = anyParentRemains;
 exports.iterateCategory = iterateCategory;
 exports.iterateProduct = iterateProduct;
+exports.findCategory = findCategory;

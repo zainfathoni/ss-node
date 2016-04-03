@@ -95,7 +95,7 @@ exports.delete = function(req, res, next, table) {
 }
 
 // TABLE-SPECIFIC
-exports.treeAll = function(req, res, next) {
+function getTree(name, callback) {
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
         var category = db.collection('category');
@@ -141,9 +141,26 @@ exports.treeAll = function(req, res, next) {
                     }
                 }
 
-                res.send(tree);
+                if (name) {
+                    tree = utils.findCategory(tree, name);
+                }
+                
+                callback(tree);
             });
         });
     });
+}
+
+exports.treeAll = function(req, res, next) {
+    getTree(null, function(tree) {
+        res.send(tree);
+    });
 };
 
+exports.treeByName = function(req, res, next) {
+    var name = req.name;
+    
+    getTree(name, function(tree) {
+        res.send(tree);
+    });
+};
