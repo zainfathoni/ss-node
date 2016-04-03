@@ -112,30 +112,28 @@ exports.treeAll = function(req, res, next) {
 
             // Root Categories
             for (var i = 0, len = result.length; i < len; i++) {
-
                 if (result[i].parent) {
                     continue;
                 }
+
                 delete result[i].parent;
                 tree.children.push({
                     type: 'category',
                     data: result[i],
                     children: []
                 });
-    }
+            }
 
-            // while (anyParentRemains(result)) {
-            //     for (var i = 0, len = result.length; i < len; i++) {
-            //         if (result[i].parent) {
-            //             continue;
-            //         }
-            //         delete result[i].parent;
-            //         tree.children.push(result[i]);
-            //     }
-            // }
+            while (anyParentRemains(result)) {
+                for (var i = 0, len = result.length; i < len; i++) {
+                    if (result[i].parent) {
+                        iterate(tree, result[i]);
+                    }
+                }
+            }
 
             res.send(tree);
-});
+        });
     });
 };
 
@@ -148,6 +146,24 @@ function anyParentRemains(arr) {
         }
     }
     return false;
+}
+
+function iterate(current, item) {
+    var data = current.data;
+    var children = current.children;
+
+    if (item.parent === data.name) {
+        delete item.parent;
+        children.push({
+            type: 'category',
+            data: item,
+            children: []
+        });
+    } else {
+        for (var i = 0, len = children.length; i < len; i++) {
+            iterate(children[i], item);
+        }
+    }
 }
 
 /*exports.treeAll = function(req, res, next) {
