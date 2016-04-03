@@ -1,6 +1,5 @@
 var router = require('express').Router();
 var mongo = require('mongodb');
-var base = require('../model/base');
 var model = require('../model/category');
 
 var ObjectID = mongo.ObjectID;
