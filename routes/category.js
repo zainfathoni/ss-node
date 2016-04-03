@@ -23,15 +23,16 @@ router.post('/', function(req, res, next) {
     
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
+        var coll = db.collection(table);
     
         // If similar Name found, update the content
-        model.findByName(db.collection(table), item.name, function(result) {
+        model.findByName(coll, item.name, function(result) {
             if (result) { // Update
-                model.update(db.collection(table), result._id, item, function(result) {
+                model.update(coll, result._id, item, function(result) {
                     res.send(result);
                 });
             } else { // InsertOne
-                model.insertOne(db.collection(table), item, function(result) {
+                model.insertOne(coll, item, function(result) {
                     res.send(result);
                 });
             }
