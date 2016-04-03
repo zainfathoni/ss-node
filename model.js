@@ -3,14 +3,16 @@ exports.insert = function(collection, item, callback) {
     collection.insert(
         item,
         function(err, result) {
-            callback(err, result);
+            if (err) return next(err);
+            callback(result);
         });
 };
 
 exports.findAll = function(collection, callback) {
     // Find To Array
     collection.find().toArray(function(err, result) {
-        callback(err, result);
+        if (err) return next(err);
+        callback(result);
     });
 };
 
@@ -19,7 +21,8 @@ exports.findById = function(collection, id, callback) {
     collection.findOne(
         { '_id': id },
         function(err, result) {
-            callback(err, result);
+            if (err) return next(err);
+            callback(result);
         });
 };
 
@@ -28,7 +31,8 @@ exports.findByName = function(collection, name, callback) {
     collection.findOne(
         { 'name': name },
         function(err, result) {
-            callback(err, result);
+            if (err) return next(err);
+            callback(result);
         });
 };
 
@@ -38,7 +42,8 @@ exports.update = function(collection, id, item, callback) {
         { '_id': id },
         item,
         function(err, result) {
-            callback(err, result);
+            if (err) return next(err);
+            callback(result);
         });
 };
 
@@ -47,6 +52,7 @@ exports.delete = function(collection, id, callback) {
     collection.deleteOne(
         { '_id': id },
         function(err, result) {
-            callback(err, result);
+            if (err) return next(err);
+            callback(result);
         });
 };

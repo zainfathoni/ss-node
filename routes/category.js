@@ -25,19 +25,13 @@ router.post('/', function(req, res, next) {
         if (err) return next(err);
     
         // If similar Name found, update the content
-        model.findByName(db.collection(table), item.name, function(err, result) {
-            if (err) return next(err);
-            
+        model.findByName(db.collection(table), item.name, function(result) {
             if (result) { // Update
-                model.update(db.collection(table), result._id, item, function(err, result) {
-                    if (err) return next(err);
-                    
+                model.update(db.collection(table), result._id, item, function(result) {
                     res.send(result);
                 });
             } else { // InsertOne
-                model.insertOne(db.collection(table), item, function(err, result) {
-                    if (err) return next(err);
-                    
+                model.insertOne(db.collection(table), item, function(result) {
                     res.send(result);
                 });
             }
