@@ -1,6 +1,7 @@
 var router = require('express').Router();
 var mongo = require('mongodb');
-var model = require('../model')
+var base = require('../model/base');
+var model = require('../model/category');
 
 var MongoClient = mongo.MongoClient;
 var ObjectID = mongo.ObjectID;
@@ -18,27 +19,7 @@ router.param('id', function(req, res, next, id) {
 });
 
 // Add
-router.post('/', function(req, res, next) {
-    var item = req.body;
-    
-    MongoClient.connect(url, function(err, db) {
-        if (err) return next(err);
-        var coll = db.collection(table);
-    
-        // If similar Name found, update the content
-        model.findByName(coll, item.name, next, function(result) {
-            if (result) { // Update
-                model.update(coll, result._id, item, next, function(result) {
-                    res.send(result);
-                });
-            } else { // Insert
-                model.insert(coll, item, next, function(result) {
-                    res.send(result);
-                });
-            }
-        });
-    });
-});
+router.post('/', model.insert);
 
 // Find All
 router.get('/', function(req, res, next) {
@@ -51,19 +32,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 // Update
-router.put('/:id', function(req, res, next) {
-    var id = req.id;
-    var item = req.body;
-    
-    MongoClient.connect(url, function(err, db) {
-        if (err) return next(err);
-        var coll = db.collection(table);
-        
-        model.update(coll, id, item, next, function(result) {
-            res.send(result);
-        });
-    });
-});
+router.put('/:id', model.update);
 
 // Delete
 router.delete('/:id', function(req, res, next) {
