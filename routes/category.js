@@ -17,7 +17,7 @@ router.param('id', function(req, res, next, id) {
     }
 });
 
-// Add One
+// Add
 router.post('/', function(req, res, next) {
     var item = req.body;
     
@@ -26,13 +26,13 @@ router.post('/', function(req, res, next) {
         var coll = db.collection(table);
     
         // If similar Name found, update the content
-        model.findByName(coll, item.name, function(result) {
+        model.findByName(coll, item.name, next, function(result) {
             if (result) { // Update
-                model.update(coll, result._id, item, function(result) {
+                model.update(coll, result._id, item, next, function(result) {
                     res.send(result);
                 });
-            } else { // InsertOne
-                model.insertOne(coll, item, function(result) {
+            } else { // Insert
+                model.insert(coll, item, next, function(result) {
                     res.send(result);
                 });
             }

@@ -1,6 +1,6 @@
-exports.insert = function(collection, item, callback) {
-    // Insert (One or Many)
-    collection.insert(
+exports.insert = function(collection, item, next, callback) {
+    // Insert One
+    collection.insertOne(
         item,
         function(err, result) {
             if (err) return next(err);
@@ -8,7 +8,7 @@ exports.insert = function(collection, item, callback) {
         });
 };
 
-exports.findAll = function(collection, callback) {
+exports.findAll = function(collection, next, callback) {
     // Find To Array
     collection.find().toArray(function(err, result) {
         if (err) return next(err);
@@ -16,7 +16,7 @@ exports.findAll = function(collection, callback) {
     });
 };
 
-exports.findById = function(collection, id, callback) {
+exports.findById = function(collection, id, next, callback) {
     // Find One
     collection.findOne(
         { '_id': id },
@@ -26,7 +26,7 @@ exports.findById = function(collection, id, callback) {
         });
 };
 
-exports.findByName = function(collection, name, callback) {
+exports.findByName = function(collection, name, next, callback) {
     // Find One
     collection.findOne(
         { 'name': name },
@@ -36,7 +36,7 @@ exports.findByName = function(collection, name, callback) {
         });
 };
 
-exports.update = function(collection, id, item, callback) {
+exports.update = function(collection, id, item, next, callback) {
     // Update One
     collection.updateOne(
         { '_id': id },
@@ -47,7 +47,7 @@ exports.update = function(collection, id, item, callback) {
         });
 };
 
-exports.delete = function(collection, id, callback) {
+exports.delete = function(collection, id, next, callback) {
     // Delete One
     collection.deleteOne(
         { '_id': id },
