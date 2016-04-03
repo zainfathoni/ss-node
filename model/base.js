@@ -69,12 +69,20 @@ exports.update = function(req, res, next, table) {
     });
 }
 
-exports.delete = function(collection, id, next, callback) {
-    // Delete One
-    collection.deleteOne(
-        { '_id': id },
-        function(err, result) {
-            if (err) return next(err);
-            callback(result);
-        });
-};
+exports.delete = function(req, res, next, table) {
+    var id = req.id;
+    var item = req.body;
+
+    MongoClient.connect(url, function(err, db) {
+        if (err) return next(err);
+        var coll = db.collection(table);
+
+        // Delete One
+        coll.deleteOne(
+            { '_id': id },
+            function(err, result) {
+                if (err) return next(err);
+                res.send(result);
+            });
+    });
+}

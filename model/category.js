@@ -8,3 +8,7 @@ exports.insert = function(req, res, next) {
 exports.update = function(req, res, next) {
     base.update(req, res, next, table);
 }
+
+exports.delete = function(req, res, next) {
+    base.delete(req, res, next, table);
+}

@@ -3,10 +3,7 @@ var mongo = require('mongodb');
 var base = require('../model/base');
 var model = require('../model/category');
 
-var MongoClient = mongo.MongoClient;
 var ObjectID = mongo.ObjectID;
-var url = 'mongodb://localhost:27017/ss-node';
-var table = 'category';
 
 // Parameter 'id' Validation
 router.param('id', function(req, res, next, id) {
@@ -35,8 +32,6 @@ router.get('/:id', function(req, res, next) {
 router.put('/:id', model.update);
 
 // Delete
-router.delete('/:id', function(req, res, next) {
-    res.send('Delete');
-});
+router.delete('/:id', model.delete);
 
 module.exports = router;
