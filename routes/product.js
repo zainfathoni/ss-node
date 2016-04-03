@@ -19,14 +19,10 @@ router.param('id', function(req, res, next, id) {
 router.post('/', model.insert);
 
 // Find All
-router.get('/', function(req, res, next) {
-    res.send('Find All');
-});
+router.get('/', model.findAll);
 
 // Find by Id
-router.get('/:id', function(req, res, next) {
-    res.send('Find by Id');
-});
+router.get('/:id', model.findById);
 
 // Update
 router.put('/:id', model.update);

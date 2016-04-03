@@ -22,32 +22,38 @@ exports.insert = function(req, res, next, table) {
     });
 }
 
-exports.findAll = function(collection, next, callback) {
-    // Find To Array
-    collection.find().toArray(function(err, result) {
+exports.findAll = function(req, res, next, table) {
+    MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
-        callback(result);
+        var coll = db.collection(table);
+
+        // Find To Array
+        coll.find().toArray(function(err, result) {
+            if (err) return next(err);
+            res.send(result);
+        });
     });
+
+
 };
 
-exports.findById = function(collection, id, next, callback) {
-    // Find One
-    collection.findOne(
-        { '_id': id },
-        function(err, result) {
-            if (err) return next(err);
-            callback(result);
-        });
-};
+exports.findById = function(req, res, next, table) {
+    var id = req.id;
 
-exports.findByName = function(collection, name, next, callback) {
-    // Find by Name
-    collection.findOne(
-        { 'name': name },
-        function(err, result) {
-            if (err) return next(err);
-            callback(result);
-        });
+    MongoClient.connect(url, function(err, db) {
+        if (err) return next(err);
+        var coll = db.collection(table);
+
+        // Find One
+        coll.findOne(
+            { '_id': id },
+            function(err, result) {
+                if (err) return next(err);
+                res.send(result);
+            });
+    });
+
+
 };
 
 exports.update = function(req, res, next, table) {
