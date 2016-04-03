@@ -16,7 +16,19 @@ exports.insert = function(req, res, next, table) {
         coll.insertOne(
             item,
             function(err, result) {
-                if (err) return next(err);
+                // Handle Duplicate '_name_' error
+                if (err) {
+                    if (err.code === 11000) {
+                        res.send({
+                            ok : 0,
+                            n : 0
+                        });
+                        return next();
+                    } else {
+                        return next(err);
+                    }
+                }
+                
                 res.send(result);
             });
 
@@ -116,7 +128,18 @@ exports.insertProduct = function(req, res, next) {
                 product.insertOne(
                     item,
                     function(err, result) {
-                        if (err) return next(err);
+                        if (err) {
+                            // Handle Duplicate '_name_' error
+                            if (err.code === 11000) {
+                                res.send({
+                                    ok : 0,
+                                    n : 0
+                                });
+                                return next();
+                            } else {
+                                return next(err);
+                            };
+                        };
                         
                         res.send(result);
                     });
