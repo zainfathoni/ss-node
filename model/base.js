@@ -104,11 +104,7 @@ exports.treeAll = function(req, res, next) {
         category.find().toArray(function(err, result) {
             if (err) return next(err);
 
-            var tree = {
-                type: 'category',
-                data: '_root',
-                children: []
-            };
+            var tree = createNode('category', '_root');
 
             // Root Categories
             for (var i = 0, len = result.length; i < len; i++) {
@@ -117,25 +113,36 @@ exports.treeAll = function(req, res, next) {
                 }
 
                 delete result[i].parent;
-                tree.children.push({
-                    type: 'category',
-                    data: result[i],
-                    children: []
-                });
+                tree.children.push(createNode('category', result[i]));
             }
 
+            // Remaining Categories
             while (anyParentRemains(result)) {
                 for (var i = 0, len = result.length; i < len; i++) {
                     if (result[i].parent) {
-                        iterate(tree, result[i]);
+                        iterateCategory(tree, result[i]);
                     }
                 }
             }
+
+            // Products
+            // product.find().toArray(function(err, result) {
+            //     if (err) return next(err);
+
+            // });
 
             res.send(tree);
         });
     });
 };
+
+function createNode(type, data) {
+    return {
+        type: type,
+        data: data,
+        children: []
+    };
+}
 
 function anyParentRemains(arr) {
     for (var i = 0, len = arr.length; i < len; i++) {
@@ -148,20 +155,16 @@ function anyParentRemains(arr) {
     return false;
 }
 
-function iterate(current, item) {
+function iterateCategory(current, item) {
     var data = current.data;
     var children = current.children;
 
     if (item.parent === data.name) {
         delete item.parent;
-        children.push({
-            type: 'category',
-            data: item,
-            children: []
-        });
+        children.push(createNode('category', item));
     } else {
         for (var i = 0, len = children.length; i < len; i++) {
-            iterate(children[i], item);
+            iterateCategory(children[i], item);
         }
     }
 }
