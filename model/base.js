@@ -92,3 +92,94 @@ exports.delete = function(req, res, next, table) {
             });
     });
 }
+
+// TABLE-SPECIFIC
+exports.treeAll = function(req, res, next) {
+    MongoClient.connect(url, function(err, db) {
+        if (err) return next(err);
+        var category = db.collection('category');
+        var product = db.collection('product');
+
+        // Find To Array
+        category.find().toArray(function(err, result) {
+            if (err) return next(err);
+
+            var tree = {
+                type: 'category',
+                data: '_root',
+                children: []
+            };
+
+            // Root Categories
+            for (var i = 0, len = result.length; i < len; i++) {
+
+                if (result[i].parent) {
+                    continue;
+                }
+                delete result[i].parent;
+                tree.children.push({
+                    type: 'category',
+                    data: result[i],
+                    children: []
+                });
+    }
+
+            // while (anyParentRemains(result)) {
+            //     for (var i = 0, len = result.length; i < len; i++) {
+            //         if (result[i].parent) {
+            //             continue;
+            //         }
+            //         delete result[i].parent;
+            //         tree.children.push(result[i]);
+            //     }
+            // }
+
+            res.send(tree);
+});
+    });
+};
+
+function anyParentRemains(arr) {
+    for (var i = 0, len = arr.length; i < len; i++) {
+        if (arr[i].parent) {
+            return true;
+        } else {
+            continue
+        }
+    }
+    return false;
+}
+
+/*exports.treeAll = function(req, res, next) {
+    var name = req.params.name;
+
+    MongoClient.connect(url, function(err, db) {
+        if (err) return next(err);
+        var category = db.collection('category');
+        var product = db.collection('product');
+
+        // Find One
+        category.findOne(
+            { 'name': name },
+            function(err, result) {
+                if (err) return next(err);
+                
+                if (result) {
+                    // Find Children
+                    coll.findOne(
+                        { 'parent': name },
+                        function(err, result) {
+                            if (err) return next(err);
+                            
+                            // Find Children
+                            coll.
+                            res.send(result);
+                        });
+                }
+                
+                res.send(result);
+            });
+    });
+
+
+};*/
