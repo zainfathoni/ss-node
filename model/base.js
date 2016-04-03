@@ -78,7 +78,6 @@ exports.update = function(req, res, next, table) {
 
 exports.delete = function(req, res, next, table) {
     var id = req.id;
-    var item = req.body;
 
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
@@ -95,6 +94,36 @@ exports.delete = function(req, res, next, table) {
 }
 
 // TABLE-SPECIFIC
+// Insert Product to Category
+exports.insertProduct = function(req, res, next) {
+    var id = req.id;
+    var item = req.body;
+    
+    MongoClient.connect(url, function(err, db) {
+        if (err) return next(err);
+        var category = db.collection('category');
+        var product = db.collection('product');
+        
+        // Find Category
+        category.findOne(
+            { '_id': id },
+            function(err, result) {
+                if (err) return next(err);
+                
+                item.parent = result.name; 
+                
+                // Insert Product
+                product.insertOne(
+                    item,
+                    function(err, result) {
+                        if (err) return next(err);
+                        
+                        res.send(result);
+                    });
+            });
+    });
+};
+
 function getTree(name, callback) {
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);

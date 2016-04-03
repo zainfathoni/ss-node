@@ -17,6 +17,9 @@ router.param('id', function(req, res, next, id) {
 // Add
 router.post('/', model.insert);
 
+// Add Product to Category
+router.post('/:id', model.insertProduct);
+
 // Find All
 router.get('/', model.findAll);
 

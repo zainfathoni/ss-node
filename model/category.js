@@ -5,6 +5,10 @@ exports.insert = function(req, res, next) {
     base.insert(req, res, next, table);
 }
 
+exports.insertProduct = function(req, res, next) {
+    base.insertProduct(req, res, next);
+}
+
 exports.findAll = function(req, res, next) {
     base.findAll(req, res, next, table);
 }
