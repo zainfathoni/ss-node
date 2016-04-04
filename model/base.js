@@ -65,8 +65,23 @@ exports.findById = function(req, res, next, table) {
                 res.send(result);
             });
     });
+};
 
+exports.findByName = function(req, res, next, table) {
+    var name = req.name;
 
+    MongoClient.connect(url, function(err, db) {
+        if (err) return next(err);
+        var coll = db.collection(table);
+
+        // Find One
+        coll.findOne(
+            { 'name': name },
+            function(err, result) {
+                if (err) return next(err);
+                res.send(result);
+            });
+    });
 };
 
 exports.update = function(req, res, next, table) {
