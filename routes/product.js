@@ -20,22 +20,28 @@ router.param('name', function(req, res, next, name) {
     next();
 });
 
-// Add
+// Add Product
 router.post('/', model.insert);
 
-// Find All
+// Find All Products
 router.get('/', model.findAll);
 
-// Find by Id
+// Find Product by Id
 router.get('/:id', model.findById);
 
-// Find by Name
+// Find Product by Name
 router.get('/name/:name', model.findByName);
 
-// Update
-router.put('/:id', model.update);
+// Update Product by Id
+router.put('/:id', model.updateById);
 
-// Delete
-router.delete('/:id', model.delete);
+// Update Product by Name
+router.put('/name/:name', model.updateByName);
+
+// Delete Product by Id
+router.delete('/:id', model.deleteById);
+
+// Delete Product by Name
+router.delete('/name/:name', model.deleteByName);
 
 module.exports = router;

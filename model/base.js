@@ -50,33 +50,22 @@ exports.findAll = function(req, res, next, table) {
 
 };
 
-exports.findById = function(req, res, next, table) {
+exports.find = function(req, res, next, table) {
     var id = req.id;
-
-    MongoClient.connect(url, function(err, db) {
-        if (err) return next(err);
-        var coll = db.collection(table);
-
-        // Find One
-        coll.findOne(
-            { '_id': id },
-            function(err, result) {
-                if (err) return next(err);
-                res.send(result);
-            });
-    });
-};
-
-exports.findByName = function(req, res, next, table) {
     var name = req.name;
-
+    
+    // Determine whether By Id or By Name
+    var query = (id) ?
+        { '_id': id } :     // By Id
+        { 'name': name };   // By Name
+        
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
         var coll = db.collection(table);
 
         // Find One
         coll.findOne(
-            { 'name': name },
+            query,
             function(err, result) {
                 if (err) return next(err);
                 res.send(result);
@@ -86,7 +75,13 @@ exports.findByName = function(req, res, next, table) {
 
 exports.update = function(req, res, next, table) {
     var id = req.id;
+    var name = req.name;
     var item = req.body;
+    
+    // Determine whether By Id or By Name
+    var query = (id) ?
+        { '_id': id } :     // By Id
+        { 'name': name };   // By Name
 
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
@@ -94,7 +89,7 @@ exports.update = function(req, res, next, table) {
 
         // Update One
         coll.updateOne(
-            { '_id': id },
+            query,
             item,
             function(err, result) {
                 if (err) return next(err);
@@ -105,6 +100,12 @@ exports.update = function(req, res, next, table) {
 
 exports.delete = function(req, res, next, table) {
     var id = req.id;
+    var name = req.name;
+    
+    // Determine whether By Id or By Name
+    var query = (id) ?
+        { '_id': id } :     // By Id
+        { 'name': name };   // By Name
 
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
@@ -112,7 +113,7 @@ exports.delete = function(req, res, next, table) {
 
         // Delete One
         coll.deleteOne(
-            { '_id': id },
+            query,
             function(err, result) {
                 if (err) return next(err);
                 res.send(result);
