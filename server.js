@@ -14,6 +14,7 @@ var port = process.env.PORT || 3000;
 app.use(morgan('combined'));
 
 // Body Parser
+app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 
 // Development Error Handler
