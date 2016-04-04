@@ -14,6 +14,12 @@ router.param('id', function(req, res, next, id) {
     }
 });
 
+// Parameter 'name' Handling
+router.param('name', function(req, res, next, name) {
+    req.name = name;
+    next();
+});
+
 // Add
 router.post('/', model.insert);
 
@@ -22,6 +28,9 @@ router.get('/', model.findAll);
 
 // Find by Id
 router.get('/:id', model.findById);
+
+// Find by Name
+router.get('/name/:name', model.findByName);
 
 // Update
 router.put('/:id', model.update);

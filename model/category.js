@@ -17,6 +17,10 @@ exports.findById = function(req, res, next) {
     base.findById(req, res, next, table);
 }
 
+exports.findByName = function(req, res, next) {
+    base.findByName(req, res, next, table);
+}
+
 exports.update = function(req, res, next) {
     base.update(req, res, next, table);
 }
