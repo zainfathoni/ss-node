@@ -39,12 +39,12 @@ describe('Category Unit Test', function() {
             });
     });
     
-    it('Update Underwear Category to "Bottom Wear" parent', function(done) {
+    it('Update Underwear Category to "Bottoms" parent', function(done) {
         server
             .put('/category/name/Underwear')
             .send({
                 "name" : "Underwear",
-                "parent" : "Bottom Wear"
+                "parent" : "Bottoms"
             })
             .expect('Content-type', /json/)
             .expect(200)
@@ -69,7 +69,7 @@ describe('Category Unit Test', function() {
                 assert.equal(res.body.error, undefined);    // No Error
                 // Category Found
                 assert.equal(res.body.name, "Underwear");
-                assert.equal(res.body.parent, "Bottom Wear");
+                assert.equal(res.body.parent, "Bottoms");
                 done();
             });
     });

@@ -163,6 +163,260 @@ describe('Complex Logic Test - Add', function() {
             });
     });
     
+    it('Insert XYZ Product into an existing X Category', function(done) {
+        server
+            .post('/product')
+            .send({
+                "name": "XYZ",
+                "price": 220000,
+                "parent": "X"
+            })
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Insert Successful
+                assert.equal(res.body.ok, 1);
+                assert.equal(res.body.n, 1);
+                done();
+            });
+    });
+    
+    it('Find XYZ Product, parent should be X\n', function(done) {
+        server
+            .get('/product/name/XYZ')
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Product Found
+                assert.equal(res.body.name, "XYZ");
+                assert.equal(res.body.price, 220000);
+                assert.equal(res.body.parent, "X");
+                done();
+            });
+    });
+    
+});
+
+describe('Complex Logic Test - Update', function() {
+    
+   it('Update X Category Name into Y', function(done) {
+        server
+            .put('/category/name/X')
+            .send({
+                "name": "Y",
+                "parent": "A"
+            })
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Update Successful
+                assert.equal(res.body.ok, 1);
+                assert.equal(res.body.nModified, 1);
+                assert.equal(res.body.n, 1);
+                done();
+            });
+    });
+    
+    it('Find Y Category, should be under parent A', function(done) {
+        server
+            .get('/category/name/Y')
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Product Found
+                assert.equal(res.body.name, "Y");
+                assert.equal(res.body.parent, "A");
+                done();
+            });
+    });
+    
+    it('Find XYZ Product, should be under parent Y\n', function(done) {
+        server
+            .get('/product/name/XYZ')
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Product Found
+                assert.equal(res.body.name, "XYZ");
+                assert.equal(res.body.price, 220000);
+                assert.equal(res.body.parent, "Y");
+                done();
+            });
+    });
+    
+    it('Update XYZ Product parent into A', function(done) {
+        server
+            .put('/product/name/XYZ')
+            .send({
+                "name": "XYZ",
+                "price": 220000,
+                "parent": "A"
+            })
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Update Successful
+                assert.equal(res.body.ok, 1);
+                assert.equal(res.body.nModified, 1);
+                assert.equal(res.body.n, 1);
+                done();
+            });
+    });
+    
+    it('Find XYZ Product, should be under parent A\n', function(done) {
+        server
+            .get('/product/name/XYZ')
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Product Found
+                assert.equal(res.body.name, "XYZ");
+                assert.equal(res.body.price, 220000);
+                assert.equal(res.body.parent, "A");
+                done();
+            });
+    });
+    
+    it('Update XYZ Product parent into Y', function(done) {
+        server
+            .put('/product/name/XYZ')
+            .send({
+                "name": "XYZ",
+                "price": 220000,
+                "parent": "Y"
+            })
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Update Successful
+                assert.equal(res.body.ok, 1);
+                assert.equal(res.body.nModified, 1);
+                assert.equal(res.body.n, 1);
+                done();
+            });
+    });
+    
+    it('Find XYZ Product, should be under parent Y\n', function(done) {
+        server
+            .get('/product/name/XYZ')
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Product Found
+                assert.equal(res.body.name, "XYZ");
+                assert.equal(res.body.price, 220000);
+                assert.equal(res.body.parent, "Y");
+                done();
+            });
+    });
+    
+    it('Update Y Category parent into null', function(done) {
+        server
+            .put('/category/name/Y')
+            .send({
+                "name": "Y",
+                "parent": null
+            })
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Update Successful
+                assert.equal(res.body.ok, 1);
+                assert.equal(res.body.nModified, 1);
+                assert.equal(res.body.n, 1);
+                done();
+            });
+    });
+    
+    it('Find Y Category, should be under parent null', function(done) {
+        server
+            .get('/category/name/Y')
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Product Found
+                assert.equal(res.body.name, "Y");
+                assert.equal(res.body.parent, null);
+                done();
+            });
+    });
+    
+    it('Find XYZ Product, should be under parent Y\n', function(done) {
+        server
+            .get('/product/name/XYZ')
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Product Found
+                assert.equal(res.body.name, "XYZ");
+                assert.equal(res.body.price, 220000);
+                assert.equal(res.body.parent, "Y");
+                done();
+            });
+    });
+    
+    // Clean Up Mess
+    
+    it('Update Y Category Name into X', function(done) {
+        server
+            .put('/category/name/Y')
+            .send({
+                "name": "X",
+                "parent": "A"
+            })
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Update Successful
+                assert.equal(res.body.ok, 1);
+                assert.equal(res.body.nModified, 1);
+                assert.equal(res.body.n, 1);
+                done();
+            });
+    });
+    
+    it('Find XYZ Product, should be under parent X\n', function(done) {
+        server
+            .get('/product/name/XYZ')
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Product Found
+                assert.equal(res.body.name, "XYZ");
+                assert.equal(res.body.price, 220000);
+                assert.equal(res.body.parent, "X");
+                done();
+            });
+    });
+        
 });
 
 describe('Complex Logic Test - Delete', function() {
@@ -213,11 +467,26 @@ describe('Complex Logic Test - Delete', function() {
             });
     });
     
-    // Clean Up Remaining Items
+    // Clean Up Mess
     
     it('Delete ABC Product', function(done) {
         server
             .delete('/product/name/ABC')
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Delete Successful
+                assert.equal(res.body.ok, 1);
+                assert.equal(res.body.n, 1);
+                done();
+            });
+    });
+    
+    it('Delete XYZ Product', function(done) {
+        server
+            .delete('/product/name/XYZ')
             .expect('Content-type', /json/)
             .expect(200)
             .end(function(err, res) {
