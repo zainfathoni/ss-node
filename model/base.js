@@ -10,28 +10,41 @@ exports.insert = function(req, res, next, table) {
 
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
+        var category = db.collection(table);
         var coll = db.collection(table);
 
-        // Insert One
-        coll.insertOne(
-            item,
+        // Verify parent
+        category.findOne(
+            { 'name': item.parent },
             function(err, result) {
-                // Handle Duplicate '_name_' error
-                if (err) {
-                    if (err.code === 11000) {
-                        res.send({
-                            ok : 0,
-                            n : 0
-                        });
-                        return next();
-                    } else {
-                        return next(err);
-                    }
-                }
-                
-                res.send(result);
-            });
+                if (err) return next(err);
 
+                if (!result) {// if parent not found, set to null
+                    item.parent = null;
+                }
+
+                // Insert One
+                coll.insertOne(
+                    item,
+                    function(err, result) {
+                        // Handle Duplicate '_name_' error
+                        if (err) {
+                            if (err.code === 11000) {
+                                db.close();
+                                res.send({
+                                    ok: 0,
+                                    n: 0
+                                });
+                                return next();
+                            } else {
+                                return next(err);
+                            }
+                        }
+
+                        db.close();
+                        res.send(result);
+                    });
+            });
     });
 }
 
@@ -43,22 +56,21 @@ exports.findAll = function(req, res, next, table) {
         // Find To Array
         coll.find().toArray(function(err, result) {
             if (err) return next(err);
+            db.close();
             res.send(result);
         });
     });
-
-
 };
 
 exports.find = function(req, res, next, table) {
     var id = req.id;
     var name = req.name;
-    
+
     // Determine whether By Id or By Name
     var query = (id) ?
         { '_id': id } :     // By Id
         { 'name': name };   // By Name
-        
+
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
         var coll = db.collection(table);
@@ -68,8 +80,11 @@ exports.find = function(req, res, next, table) {
             query,
             function(err, result) {
                 if (err) return next(err);
+
+                db.close();
                 res.send(result);
             });
+
     });
 };
 
@@ -77,7 +92,7 @@ exports.update = function(req, res, next, table) {
     var id = req.id;
     var name = req.name;
     var item = req.body;
-    
+
     // Determine whether By Id or By Name
     var query = (id) ?
         { '_id': id } :     // By Id
@@ -85,15 +100,70 @@ exports.update = function(req, res, next, table) {
 
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
-        var coll = db.collection(table);
+        var category = db.collection('category');
+        var product = db.collection('product');
 
-        // Update One
-        coll.updateOne(
-            query,
-            item,
+        // Verify parent
+        category.findOne(
+            { 'name': item.parent },
             function(err, result) {
                 if (err) return next(err);
-                res.send(result);
+
+                if (!result) {// if parent not found, set to null
+                    item.parent = null;
+                }
+
+                if (table === 'category') {
+                    // Before Category is updated, set children Category & Products parent into the new one
+                    category.findOne(
+                        query,
+                        function(err, result) {
+                            if (err) return next(err);
+
+                            if (result) {
+                                var name = result.name;
+
+                                // Update children Categories
+                                category.updateMany(
+                                    { parent: name },
+                                    { $set: { parent: item.name } },
+                                    function(err, result) {
+                                        if (err) return next(err);
+
+                                        // Update children Products
+                                        product.updateMany(
+                                            { parent: name },
+                                            { $set: { parent: item.name } },
+                                            function(err, result) {
+                                                if (err) return next(err);
+
+                                                // Update Category
+                                                category.updateOne(
+                                                    query,
+                                                    item,
+                                                    function(err, result) {
+                                                        if (err) return next(err);
+                                                        db.close();
+                                                        res.send(result);
+                                                    });
+                                            });
+                                    });
+                            } else { // if category not found, exit
+                                db.close();
+                                res.send(result);
+                            }
+                        });
+                } else {
+                    // Update Product
+                    product.updateOne(
+                        query,
+                        item,
+                        function(err, result) {
+                            if (err) return next(err);
+                            db.close();
+                            res.send(result);
+                        });
+                }
             });
     });
 }
@@ -101,7 +171,7 @@ exports.update = function(req, res, next, table) {
 exports.delete = function(req, res, next, table) {
     var id = req.id;
     var name = req.name;
-    
+
     // Determine whether By Id or By Name
     var query = (id) ?
         { '_id': id } :     // By Id
@@ -109,15 +179,60 @@ exports.delete = function(req, res, next, table) {
 
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
-        var coll = db.collection(table);
+        var category = db.collection('category');
+        var product = db.collection('product');
 
-        // Delete One
-        coll.deleteOne(
-            query,
-            function(err, result) {
-                if (err) return next(err);
-                res.send(result);
-            });
+        if (table === 'category') {
+            // Before Category is deleted, set children Category & Products parent into null
+            category.findOne(
+                query,
+                function(err, result) {
+                    if (err) return next(err);
+
+                    if (result) {
+                        var name = result.name;
+
+                        // Update children Categories
+                        category.updateMany(
+                            { parent: name },
+                            { $set: { parent: null } },
+                            function(err, result) {
+                                if (err) return next(err);
+
+                                // Update children Products
+                                product.updateMany(
+                                    { parent: name },
+                                    { $set: { parent: null } },
+                                    function(err, result) {
+                                        if (err) return next(err);
+
+                                        // Delete Category
+                                        category.deleteOne(
+                                            query,
+                                            function(err, result) {
+                                                if (err) return next(err);
+                                                db.close();
+                                                res.send(result);
+                                            });
+                                    }
+                                );
+                            }
+                        );
+                    } else { // if category not found, exit
+                        db.close();
+                        res.send(result);
+                    }
+                });
+        } else {
+            // Delete Product
+            product.deleteOne(
+                query,
+                function(err, result) {
+                    if (err) return next(err);
+                    db.close();
+                    res.send(result);
+                });
+        }
     });
 }
 
@@ -126,20 +241,20 @@ exports.delete = function(req, res, next, table) {
 exports.insertProduct = function(req, res, next) {
     var id = req.id;
     var item = req.body;
-    
+
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
         var category = db.collection('category');
         var product = db.collection('product');
-        
+
         // Find Category
         category.findOne(
             { '_id': id },
             function(err, result) {
                 if (err) return next(err);
-                
-                item.parent = result.name; 
-                
+
+                item.parent = result.name;
+
                 // Insert Product
                 product.insertOne(
                     item,
@@ -147,16 +262,18 @@ exports.insertProduct = function(req, res, next) {
                         if (err) {
                             // Handle Duplicate '_name_' error
                             if (err.code === 11000) {
+                                db.close();
                                 res.send({
-                                    ok : 0,
-                                    n : 0
+                                    ok: 0,
+                                    n: 0
                                 });
                                 return next();
                             } else {
                                 return next(err);
                             };
                         };
-                        
+
+                        db.close();
                         res.send(result);
                     });
             });
@@ -212,7 +329,8 @@ function getTree(name, callback) {
                 if (name) {
                     tree = utils.findCategory(tree, name);
                 }
-                
+
+                db.close();
                 callback(tree);
             });
         });
@@ -227,7 +345,7 @@ exports.treeAll = function(req, res, next) {
 
 exports.treeByName = function(req, res, next) {
     var name = req.name;
-    
+
     getTree(name, function(tree) {
         res.send(tree);
     });
