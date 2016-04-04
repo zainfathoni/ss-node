@@ -14,19 +14,34 @@ router.param('id', function(req, res, next, id) {
     }
 });
 
-// Add
+// Parameter 'name' Handling
+router.param('name', function(req, res, next, name) {
+    req.name = name;
+    next();
+});
+
+// Add Product
 router.post('/', model.insert);
 
-// Find All
+// Find All Products
 router.get('/', model.findAll);
 
-// Find by Id
+// Find Product by Id
 router.get('/:id', model.findById);
 
-// Update
-router.put('/:id', model.update);
+// Find Product by Name
+router.get('/name/:name', model.findByName);
 
-// Delete
-router.delete('/:id', model.delete);
+// Update Product by Id
+router.put('/:id', model.updateById);
+
+// Update Product by Name
+router.put('/name/:name', model.updateByName);
+
+// Delete Product by Id
+router.delete('/:id', model.deleteById);
+
+// Delete Product by Name
+router.delete('/name/:name', model.deleteByName);
 
 module.exports = router;

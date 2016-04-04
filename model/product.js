@@ -10,13 +10,25 @@ exports.findAll = function(req, res, next) {
 }
 
 exports.findById = function(req, res, next) {
-    base.findById(req, res, next, table);
+    base.find(req, res, next, table);
 }
 
-exports.update = function(req, res, next) {
+exports.findByName = function(req, res, next) {
+    base.find(req, res, next, table);
+}
+
+exports.updateById = function(req, res, next) {
     base.update(req, res, next, table);
 }
 
-exports.delete = function(req, res, next) {
+exports.updateByName = function(req, res, next) {
+    base.update(req, res, next, table);
+}
+
+exports.deleteById = function(req, res, next) {
+    base.delete(req, res, next, table);
+}
+
+exports.deleteByName = function(req, res, next) {
     base.delete(req, res, next, table);
 }
