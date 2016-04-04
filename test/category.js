@@ -5,12 +5,12 @@ var port = process.env.PORT || 3000;
 // This agent refers to PORT where program is runninng.
 var server = supertest.agent('http://localhost:' + port);
 
-// Product Unit Test
-describe('Product Unit Test', function() {
+// Category Unit Test
+describe('Category Unit Test', function() {
 
-    it('Find All Products', function(done) {
+    it('Find All Categories', function(done) {
         server
-            .get('/product')
+            .get('/category')
             .expect('Content-type', /json/)
             .expect(200)
             .end(function(err, res) {
@@ -20,13 +20,12 @@ describe('Product Unit Test', function() {
             });
     });
 
-    it('Insert Tuxedo Product', function(done) {
+    it('Insert Underwear Category with no parent', function(done) {
         server
-            .post('/product')
+            .post('/category')
             .send({
-                "name": "Tuxedo",
-                "price": 2050000,
-                "parent": "Top Wear"
+                "name" : "Underwear",
+                "parent" : null
             })
             .expect('Content-type', /json/)
             .expect(200)
@@ -40,13 +39,12 @@ describe('Product Unit Test', function() {
             });
     });
     
-    it('Update Tuxedo Product', function(done) {
+    it('Update Underwear Category to "Bottom Wear" parent', function(done) {
         server
-            .put('/product/name/Tuxedo')
+            .put('/category/name/Underwear')
             .send({
-                "name": "Tuxedo",
-                "price": 4050000,
-                "parent": "Top Wear"
+                "name" : "Underwear",
+                "parent" : "Bottom Wear"
             })
             .expect('Content-type', /json/)
             .expect(200)
@@ -61,25 +59,24 @@ describe('Product Unit Test', function() {
             });
     });
 
-    it('Find Tuxedo Product', function(done) {
+    it('Find Underwear Category', function(done) {
         server
-            .get('/product/name/Tuxedo')
+            .get('/category/name/Underwear')
             .expect('Content-type', /json/)
             .expect(200)
             .end(function(err, res) {
                 assert.equal(res.status, 200);      // HTTP status 200
                 assert.equal(res.body.error, undefined);    // No Error
-                // Insert Successful
-                assert.equal(res.body.name, "Tuxedo");
-                assert.equal(res.body.price, 4050000);
-                assert.equal(res.body.parent, "Top Wear");
+                // Category Found
+                assert.equal(res.body.name, "Underwear");
+                assert.equal(res.body.parent, "Bottom Wear");
                 done();
             });
     });
     
-    it('Delete Tuxedo Product', function(done) {
+    it('Delete Underwear Category', function(done) {
         server
-            .delete('/product/name/Tuxedo')
+            .delete('/category/name/Underwear')
             .expect('Content-type', /json/)
             .expect(200)
             .end(function(err, res) {
