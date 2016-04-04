@@ -10,28 +10,41 @@ exports.insert = function(req, res, next, table) {
 
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
+        var category = db.collection(table);
         var coll = db.collection(table);
 
-        // Insert One
-        coll.insertOne(
-            item,
+        // Verify parent
+        category.findOne(
+            { 'name': item.parent },
             function(err, result) {
-                // Handle Duplicate '_name_' error
-                if (err) {
-                    if (err.code === 11000) {
-                        res.send({
-                            ok: 0,
-                            n: 0
-                        });
-                        return next();
-                    } else {
-                        return next(err);
-                    }
+                if (err) return next(err);
+                
+                if (!result) {// if parent not found, set to null
+                    item.parent = null;
                 }
+                
+                // Insert One
+                coll.insertOne(
+                    item,
+                    function(err, result) {
+                        // Handle Duplicate '_name_' error
+                        if (err) {
+                            if (err.code === 11000) {
+                                db.close();
+                                res.send({
+                                    ok: 0,
+                                    n: 0
+                                });
+                                return next();
+                            } else {
+                                return next(err);
+                            }
+                        }
 
-                res.send(result);
+                        db.close();
+                        res.send(result);
+                    });
             });
-        db.close();
     });
 }
 
@@ -43,9 +56,9 @@ exports.findAll = function(req, res, next, table) {
         // Find To Array
         coll.find().toArray(function(err, result) {
             if (err) return next(err);
+            db.close();
             res.send(result);
         });
-        db.close();
     });
 
 
@@ -69,9 +82,11 @@ exports.find = function(req, res, next, table) {
             query,
             function(err, result) {
                 if (err) return next(err);
+                
+                db.close();
                 res.send(result);
             });
-        db.close();
+        
     });
 };
 
@@ -95,9 +110,9 @@ exports.update = function(req, res, next, table) {
             item,
             function(err, result) {
                 if (err) return next(err);
+                db.close();
                 res.send(result);
             });
-        db.close();
     });
 }
 
@@ -119,9 +134,9 @@ exports.delete = function(req, res, next, table) {
             query,
             function(err, result) {
                 if (err) return next(err);
+                db.close();
                 res.send(result);
             });
-        db.close();
     });
 }
 
@@ -151,6 +166,7 @@ exports.insertProduct = function(req, res, next) {
                         if (err) {
                             // Handle Duplicate '_name_' error
                             if (err.code === 11000) {
+                                db.close();
                                 res.send({
                                     ok: 0,
                                     n: 0
@@ -160,11 +176,11 @@ exports.insertProduct = function(req, res, next) {
                                 return next(err);
                             };
                         };
-
+                        
+                        db.close();
                         res.send(result);
                     });
             });
-        db.close();
     });
 };
 
