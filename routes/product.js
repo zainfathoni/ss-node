@@ -36,12 +36,12 @@ router.get('/name/:name', model.findByName);
 router.put('/:id', model.updateById);
 
 // Update Product by Name
-// router.put('/name/:name', model.updateByName);
+router.put('/name/:name', model.updateByName);
 
 // Delete Product by Id
 router.delete('/:id', model.deleteById);
 
 // Delete Product by Name
-// router.delete('/name/:name', model.deleteByName);
+router.delete('/name/:name', model.deleteByName);
 
 module.exports = router;

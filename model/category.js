@@ -25,6 +25,14 @@ exports.updateById = function(req, res, next) {
     base.update(req, res, next, table);
 }
 
+exports.updateByName = function(req, res, next) {
+    base.update(req, res, next, table);
+}
+
 exports.deleteById = function(req, res, next) {
+    base.delete(req, res, next, table);
+}
+
+exports.deleteByName = function(req, res, next) {
     base.delete(req, res, next, table);
 }

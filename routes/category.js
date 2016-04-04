@@ -39,12 +39,12 @@ router.get('/name/:name', model.findByName);
 router.put('/:id', model.updateById);
 
 // Update Category by Name
-// router.put('/name/:name', model.updateByName);
+router.put('/name/:name', model.updateByName);
 
 // Delete Category by Id
 router.delete('/:id', model.deleteById);
 
 // Delete Category by Name
-// router.delete('/name/:name', model.deleteByName);
+router.delete('/name/:name', model.deleteByName);
 
 module.exports = router;
