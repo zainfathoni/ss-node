@@ -6,7 +6,7 @@ var port = process.env.PORT || 3000;
 var server = supertest.agent('http://localhost:' + port);
 
 // Complex Logic Test
-describe('Complex Logic Test', function() {
+describe('Complex Logic Test - Add', function() {
 
     it('Insert ABC Product into a non-existing A Category', function(done) {
         server
@@ -148,7 +148,7 @@ describe('Complex Logic Test', function() {
             });
     });
     
-    it('Find X Category, parent should be A\n', function(done) {
+    it('Find X Category, parent should be A', function(done) {
         server
             .get('/category/name/X')
             .expect('Content-type', /json/)
@@ -162,6 +162,10 @@ describe('Complex Logic Test', function() {
                 done();
             });
     });
+    
+});
+
+describe('Complex Logic Test - Delete', function() {
     
     it('Delete A Category, so X Category & ABC Product will lose their parent', function(done) {
         server
