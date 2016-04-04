@@ -20,18 +20,18 @@ exports.insert = function(req, res, next, table) {
                 if (err) {
                     if (err.code === 11000) {
                         res.send({
-                            ok : 0,
-                            n : 0
+                            ok: 0,
+                            n: 0
                         });
                         return next();
                     } else {
                         return next(err);
                     }
                 }
-                
+
                 res.send(result);
             });
-
+        db.close();
     });
 }
 
@@ -45,6 +45,7 @@ exports.findAll = function(req, res, next, table) {
             if (err) return next(err);
             res.send(result);
         });
+        db.close();
     });
 
 
@@ -53,12 +54,12 @@ exports.findAll = function(req, res, next, table) {
 exports.find = function(req, res, next, table) {
     var id = req.id;
     var name = req.name;
-    
+
     // Determine whether By Id or By Name
     var query = (id) ?
         { '_id': id } :     // By Id
         { 'name': name };   // By Name
-        
+
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
         var coll = db.collection(table);
@@ -70,6 +71,7 @@ exports.find = function(req, res, next, table) {
                 if (err) return next(err);
                 res.send(result);
             });
+        db.close();
     });
 };
 
@@ -77,7 +79,7 @@ exports.update = function(req, res, next, table) {
     var id = req.id;
     var name = req.name;
     var item = req.body;
-    
+
     // Determine whether By Id or By Name
     var query = (id) ?
         { '_id': id } :     // By Id
@@ -95,13 +97,14 @@ exports.update = function(req, res, next, table) {
                 if (err) return next(err);
                 res.send(result);
             });
+        db.close();
     });
 }
 
 exports.delete = function(req, res, next, table) {
     var id = req.id;
     var name = req.name;
-    
+
     // Determine whether By Id or By Name
     var query = (id) ?
         { '_id': id } :     // By Id
@@ -118,6 +121,7 @@ exports.delete = function(req, res, next, table) {
                 if (err) return next(err);
                 res.send(result);
             });
+        db.close();
     });
 }
 
@@ -126,20 +130,20 @@ exports.delete = function(req, res, next, table) {
 exports.insertProduct = function(req, res, next) {
     var id = req.id;
     var item = req.body;
-    
+
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
         var category = db.collection('category');
         var product = db.collection('product');
-        
+
         // Find Category
         category.findOne(
             { '_id': id },
             function(err, result) {
                 if (err) return next(err);
-                
-                item.parent = result.name; 
-                
+
+                item.parent = result.name;
+
                 // Insert Product
                 product.insertOne(
                     item,
@@ -148,18 +152,19 @@ exports.insertProduct = function(req, res, next) {
                             // Handle Duplicate '_name_' error
                             if (err.code === 11000) {
                                 res.send({
-                                    ok : 0,
-                                    n : 0
+                                    ok: 0,
+                                    n: 0
                                 });
                                 return next();
                             } else {
                                 return next(err);
                             };
                         };
-                        
+
                         res.send(result);
                     });
             });
+        db.close();
     });
 };
 
@@ -213,6 +218,7 @@ function getTree(name, callback) {
                     tree = utils.findCategory(tree, name);
                 }
                 
+                db.close();
                 callback(tree);
             });
         });
@@ -227,7 +233,7 @@ exports.treeAll = function(req, res, next) {
 
 exports.treeByName = function(req, res, next) {
     var name = req.name;
-    
+
     getTree(name, function(tree) {
         res.send(tree);
     });
