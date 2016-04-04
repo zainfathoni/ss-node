@@ -26,7 +26,7 @@ describe('Product Unit Test', function() {
             .send({
                 "name": "Tuxedo",
                 "price": 2050000,
-                "parent": "Top Wear"
+                "parent": "Tops"
             })
             .expect('Content-type', /json/)
             .expect(200)
@@ -46,7 +46,7 @@ describe('Product Unit Test', function() {
             .send({
                 "name": "Tuxedo",
                 "price": 4050000,
-                "parent": "Top Wear"
+                "parent": "Tops"
             })
             .expect('Content-type', /json/)
             .expect(200)
@@ -72,7 +72,7 @@ describe('Product Unit Test', function() {
                 // Product Found
                 assert.equal(res.body.name, "Tuxedo");
                 assert.equal(res.body.price, 4050000);
-                assert.equal(res.body.parent, "Top Wear");
+                assert.equal(res.body.parent, "Tops");
                 done();
             });
     });
