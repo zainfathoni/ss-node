@@ -10,7 +10,7 @@ exports.insert = function(req, res, next, table) {
 
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
-        var category = db.collection(table);
+        var category = db.collection('category');
         var coll = db.collection(table);
 
         // Verify parent
