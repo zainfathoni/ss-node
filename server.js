@@ -40,6 +40,14 @@ app.use(function(err, req, res, next) {
 app.use('/category', category);
 app.use('/product', product);
 app.use('/tree', tree);
+app.route('/')
+    .get(function(req, res) {
+        res.send({
+            app: 'ss-node',
+            source: 'https://github.com/zainfathoni/ss-node',
+            author: 'Zain Fathoni'
+        })
+    });
 
 // START SERVER
 app.listen(port);
