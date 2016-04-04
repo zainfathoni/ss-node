@@ -163,7 +163,54 @@ describe('Complex Logic Test', function() {
             });
     });
     
-    // CLEAN UP
+    it('Delete A Category, so X Category & ABC Product will lose their parent', function(done) {
+        server
+            .delete('/category/name/A')
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Delete Successful
+                assert.equal(res.body.ok, 1);
+                assert.equal(res.body.n, 1);
+                done();
+            });
+    });
+    
+    it('Find ABC Product, parent should be null', function(done) {
+        server
+            .get('/product/name/ABC')
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Product Found
+                assert.equal(res.body.name, "ABC");
+                assert.equal(res.body.price, 110000);
+                assert.equal(res.body.parent, null);
+                done();
+            });
+    });
+    
+    it('Find X Category, parent should be null\n', function(done) {
+        server
+            .get('/category/name/X')
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                assert.equal(res.status, 200);      // HTTP status 200
+                assert.equal(res.body.error, undefined);    // No Error
+                // Product Found
+                assert.equal(res.body.name, "X");
+                assert.equal(res.body.parent, null);
+                done();
+            });
+    });
+    
+    // Clean Up Remaining Items
+    
     it('Delete ABC Product', function(done) {
         server
             .delete('/product/name/ABC')
@@ -194,19 +241,4 @@ describe('Complex Logic Test', function() {
             });
     });
     
-    it('Delete A Category', function(done) {
-        server
-            .delete('/category/name/A')
-            .expect('Content-type', /json/)
-            .expect(200)
-            .end(function(err, res) {
-                assert.equal(res.status, 200);      // HTTP status 200
-                assert.equal(res.body.error, undefined);    // No Error
-                // Delete Successful
-                assert.equal(res.body.ok, 1);
-                assert.equal(res.body.n, 1);
-                done();
-            });
-    });
-
 });
