@@ -18,11 +18,11 @@ exports.insert = function(req, res, next, table) {
             { 'name': item.parent },
             function(err, result) {
                 if (err) return next(err);
-                
+
                 if (!result) {// if parent not found, set to null
                     item.parent = null;
                 }
-                
+
                 // Insert One
                 coll.insertOne(
                     item,
@@ -60,8 +60,6 @@ exports.findAll = function(req, res, next, table) {
             res.send(result);
         });
     });
-
-
 };
 
 exports.find = function(req, res, next, table) {
@@ -82,11 +80,11 @@ exports.find = function(req, res, next, table) {
             query,
             function(err, result) {
                 if (err) return next(err);
-                
+
                 db.close();
                 res.send(result);
             });
-        
+
     });
 };
 
@@ -127,16 +125,62 @@ exports.delete = function(req, res, next, table) {
 
     MongoClient.connect(url, function(err, db) {
         if (err) return next(err);
-        var coll = db.collection(table);
+        var category = db.collection('category');
+        var product = db.collection('product');
 
-        // Delete One
-        coll.deleteOne(
-            query,
-            function(err, result) {
-                if (err) return next(err);
-                db.close();
-                res.send(result);
-            });
+        if (table === 'category') {
+            // Before Category is deleted, set children Category & Products parent into null
+            category.findOne(
+                query,
+                function(err, result) {
+                    if (err) return next(err);
+
+                    if (result) {
+                        var name = result.name;
+
+                        // Update children Categories
+                        category.updateMany(
+                            { parent: name },
+                            { $set: { parent: null } },
+                            function(err, result) {
+                                if (err) return next(err);
+
+                                // Update children Products
+                                product.updateMany(
+                                    { parent: name },
+                                    { $set: { parent: null } },
+                                    function(err, result) {
+                                        if (err) return next(err);
+
+                                        // Delete Category
+                                        category.deleteOne(
+                                            query,
+                                            function(err, result) {
+                                                if (err) return next(err);
+                                                db.close();
+                                                res.send(result);
+                                            });
+                                    }
+                                );
+                            }
+                        );
+
+
+                    } else { // if category not found, exit
+                        db.close();
+                        res.send(result);
+                    }
+                });
+        } else {
+            // Delete Product
+            product.deleteOne(
+                query,
+                function(err, result) {
+                    if (err) return next(err);
+                    db.close();
+                    res.send(result);
+                });
+        }
     });
 }
 
@@ -176,7 +220,7 @@ exports.insertProduct = function(req, res, next) {
                                 return next(err);
                             };
                         };
-                        
+
                         db.close();
                         res.send(result);
                     });
@@ -233,7 +277,7 @@ function getTree(name, callback) {
                 if (name) {
                     tree = utils.findCategory(tree, name);
                 }
-                
+
                 db.close();
                 callback(tree);
             });
